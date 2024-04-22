@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 void roundRobin(int n, int bt[], int at[], int quantum);
 
 int main() {
