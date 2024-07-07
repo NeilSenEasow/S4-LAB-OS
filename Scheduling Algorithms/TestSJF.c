@@ -53,7 +53,7 @@ int main() {
     // Calculate Completion Time
     c[0] = a[0] + b[0];  // Completion time for the first process
     for (i = 1; i < num; i++) {
-        if (a[i] > c[i - 1]) {
+        if (a[i] >= c[i - 1]) {
             c[i] = a[i] + b[i];  // Process arrives after the previous process has completed
         } else {
             c[i] = c[i - 1] + b[i];  // Process arrives before the previous process has completed

@@ -35,7 +35,7 @@ int main()   {
     }
 
     //Completion Time
-    c[0] = b[0] - a[0];
+    c[0] = b[0] + a[0];
     //printf("%d\n",c[0]);
     
     for( i = 1 ; i<num ; i++ )   {
