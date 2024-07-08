@@ -15,7 +15,7 @@ void P(struct semaphore s)
         s.q.push(P); 
         sleep();
     }
-}
+}a
  
 void V(Semaphore s)
 {
