@@ -1,81 +1,76 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <limits.h> // For INT_MAX
 
-void sjf(int n, int bt[], int at[]);
-
-int main() {
-    int n;
-    
-    printf("Enter the number of processes: ");
-    scanf("%d", &n);
-    
-    int bt[n],at[n],i;
-    
-    //Arrival Time
-    printf("Enter Arrival Time\n");
-    for( i = 0; i < n ; i++ )   {
-        scanf("%d",&at[i]);
-    }
-    //Burst Time
-    printf("Enter Burst Time\n");
-    for( i = 0; i < n ; i++ )   {
-        scanf("%d",&bt[i]);
-    }
-    
-    sjf(n, bt, at);
-    
-    return 0;
-}
-
-void sjf(int n, int bt[], int at[]) {
-    int wt[n], tat[n], ct[n], rt[n];
-    float total_wt = 0, total_tat = 0;
-    int complete = 0, t = 0;
-
-    for (int i = 0; i < n; i++)
-        rt[i] = bt[i];
-
-    while (complete != n) {
-        int shortest = -1;
-        int min_rt = INT_MAX;
-
-        for (int j = 0; j < n; j++) {
-            if (at[j] <= t && rt[j] < min_rt && rt[j] > 0) {
-                min_rt = rt[j];
-                shortest = j;
+void sortProcessesByArrival(int num, int p[], int a[], int b[]) {
+    for (int i = 0; i < num - 1; i++) {
+        for (int j = 0; j < num - i - 1; j++) {
+            if (a[j] > a[j + 1]) {
+                // Swap arrival times
+                int temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+                
+                // Swap burst times
+                temp = b[j];
+                b[j] = b[j + 1];
+                b[j + 1] = temp;
+                
+                // Swap process IDs
+                temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
             }
         }
+    }
+}
 
-        if (shortest == -1) {
-            t++;
-            continue;
+int main() {
+    int p[100], a[100], b[100], c[100], t[100], w[100], i, num;
+
+    printf("Enter number of processes: ");
+    scanf("%d", &num);
+   
+    // Processes
+    printf("Enter process IDs:\n");
+    for (i = 0; i < num; i++) {
+        scanf("%d", &p[i]);
+    }
+ 
+    // Arrival Times
+    printf("Enter Arrival Times:\n");
+    for (i = 0; i < num; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    // Burst Times
+    printf("Enter Burst Times:\n");
+    for (i = 0; i < num; i++) {
+        scanf("%d", &b[i]);
+    }
+
+    // Sort processes by arrival time
+    sortProcessesByArrival(num, p, a, b);
+
+    // Calculate Completion Time
+    c[0] = a[0] + b[0];  // Completion time for the first process
+    for (i = 1; i < num; i++) {
+        if (a[i] > c[i - 1]) {
+            c[i] = a[i] + b[i];  // Process arrives after the previous process has completed
+        } else {
+            c[i] = c[i - 1] + b[i];  // Process arrives before the previous process has completed
         }
-
-        rt[shortest]--;
-
-        if (rt[shortest] == 0) {
-            complete++;
-            int finish_time = t + 1;
-            ct[shortest] = finish_time;
-            wt[shortest] = finish_time - bt[shortest] - at[shortest];
-            if (wt[shortest] < 0) wt[shortest] = 0;
-        }
-
-        t++;
     }
 
-    for (int i = 0; i < n; i++) {
-        tat[i] = bt[i] + wt[i];
-        total_wt += wt[i];
-        total_tat += tat[i];
+    // Calculate Turnaround Time and Waiting Time
+    for (i = 0; i < num; i++) {
+        t[i] = c[i] - a[i];  // Turnaround time
+        w[i] = t[i] - b[i];  // Waiting time
     }
 
-    printf("\nProcess\tBurst Time\tArrival Time\tCompletion Time\tWaiting Time\tTurnaround Time\n");
-    for (int i = 0; i < n; i++) {
-        printf("%d\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n", i + 1, bt[i], at[i], ct[i], wt[i], tat[i]);
+    // Print the results
+    printf("Process\tArrival Time\tBurst Time\tCompletion Time\tTAT\tWaiting Time\n");
+    for (i = 0; i < num; i++) {
+        printf("%d\t%d\t\t%d\t\t%d\t\t%d\t%d\n", p[i], a[i], b[i], c[i], t[i], w[i]);
     }
 
-    printf("\nAverage Waiting Time: %.2f\n", total_wt / n);
-    printf("Average Turnaround Time: %.2f\n", total_tat / n);
+    return 0;
 }
